@@ -2,8 +2,8 @@
 
 SG_ID="sg-0ca02c3d8a6920a37" # replace with your ID
 AMI_ID="ami-0220d79f3f480ecf5"
-ZONE_ID="Z05013202FKF0ZL12WAOP"
-DOMAIN_NAME="daws88s.online"
+ZONE_ID="Z06807542IU79SI9C16DC"
+DOMAIN_NAME="phani.fun"
 
 for instance in $@
 do
@@ -22,7 +22,7 @@ do
             --query 'Reservations[].Instances[].PublicIpAddress' \
             --output text
         )
-        # RECORD_NAME="$DOMAIN_NAME" # daws88s.online
+        RECORD_NAME="$DOMAIN_NAME" # daws88s.online
     else
         IP=$(
             aws ec2 describe-instances \
@@ -30,34 +30,34 @@ do
             --query 'Reservations[].Instances[].PrivateIpAddress' \
             --output text
         )
-        # RECORD_NAME="$instance.$DOMAIN_NAME" # mongodb.daws88s.online
+        RECORD_NAME="$instance.$DOMAIN_NAME" # mongodb.daws88s.online
     fi
 
     echo "IP Address: $IP"
 
-    # aws route53 change-resource-record-sets \
-    # --hosted-zone-id $ZONE_ID \
-    # --change-batch '
-    # {
-    #     "Comment": "Updating record",
-    #     "Changes": [
-    #         {
-    #         "Action": "UPSERT",
-    #         "ResourceRecordSet": {
-    #             "Name": "'$RECORD_NAME'",
-    #             "Type": "A",
-    #             "TTL": 1,
-    #             "ResourceRecords": [
-    #             {
-    #                 "Value": "'$IP'"
-    #             }
-    #             ]
-    #         }
-    #         }
-    #     ]
-    # }
-    # '
+    aws route53 change-resource-record-sets \
+    --hosted-zone-id $ZONE_ID \
+    --change-batch '
+    {
+        "Comment": "Updating record",
+        "Changes": [
+            {
+            "Action": "UPSERT",
+            "ResourceRecordSet": {
+                "Name": "'$RECORD_NAME'",
+                "Type": "A",
+                "TTL": 1,
+                "ResourceRecords": [
+                {
+                    "Value": "'$IP'"
+                }
+                ]
+            }
+            }
+        ]
+    }
+    '
 
-    # echo "record updated for $instance"
+    echo "record updated for $instance"
 
 done
