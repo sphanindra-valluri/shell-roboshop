@@ -49,37 +49,37 @@ VALIDATE $? "Creating app directory"
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip  &>>$LOGS_FILE
 VALIDATE $? "Downloading catalogue code"
 
-# cd /app
-# VALIDATE $? "Moving to app directory"
+cd /app
+VALIDATE $? "Moving to app directory"
 
-# rm -rf /app/*
-# VALIDATE $? "Removing existing code"
+rm -rf /app/*
+VALIDATE $? "Removing existing code"
 
-# unzip /tmp/catalogue.zip &>>$LOGS_FILE
-# VALIDATE $? "Uzip catalogue code"
+unzip /tmp/catalogue.zip &>>$LOGS_FILE
+VALIDATE $? "Uzip catalogue code"
 
-# npm install  &>>$LOGS_FILE
-# VALIDATE $? "Installing dependencies"
+npm install  &>>$LOGS_FILE
+VALIDATE $? "Installing dependencies"
 
-# cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
-# VALIDATE $? "Created systemctl service"
+cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
+VALIDATE $? "Created systemctl service"
 
-# systemctl daemon-reload
-# systemctl enable catalogue  &>>$LOGS_FILE
-# systemctl start catalogue
-# VALIDATE $? "Starting and enabling catalogue"
+systemctl daemon-reload
+systemctl enable catalogue  &>>$LOGS_FILE
+systemctl start catalogue
+VALIDATE $? "Starting and enabling catalogue"
 
-# cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
-# dnf install mongodb-mongosh -y &>>$LOGS_FILE
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+dnf install mongodb-mongosh -y &>>$LOGS_FILE
 
-# INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
+INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 
-# if [ $INDEX -le 0 ]; then
-#     mongosh --host $MONGODB_HOST </app/db/master-data.js
-#     VALIDATE $? "Loading products"
-# else
-#     echo -e "Products already loaded ... $Y SKIPPING $N"
-# fi
+if [ $INDEX -le 0 ]; then
+    mongosh --host $MONGODB_HOST </app/db/master-data.js
+    VALIDATE $? "Loading products"
+else
+    echo -e "Products already loaded ... $Y SKIPPING $N"
+fi
 
-# systemctl restart catalogue
-# VALIDATE $? "Restarting catalogue"
+systemctl restart catalogue
+VALIDATE $? "Restarting catalogue"
